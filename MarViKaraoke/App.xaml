@@ -1,0 +1,22 @@
+<Application x:Class="MarViKaraoke.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <!-- Dark Neon Theme Colors -->
+        <Color x:Key="BgDark">#060812</Color>
+        <Color x:Key="BgSurface">#0f1426</Color>
+        <Color x:Key="AccentCyan">#00f0ff</Color>
+        <Color x:Key="AccentMagenta">#ff007f</Color>
+        <Color x:Key="AccentPurple">#7928ca</Color>
+        <Color x:Key="TextPrimary">#ffffff</Color>
+        <Color x:Key="TextSecondary">#8fa0bc</Color>
+
+        <SolidColorBrush x:Key="BgDarkBrush" Color="{StaticResource BgDark}" />
+        <SolidColorBrush x:Key="BgSurfaceBrush" Color="{StaticResource BgSurface}" />
+        <SolidColorBrush x:Key="AccentCyanBrush" Color="{StaticResource AccentCyan}" />
+        <SolidColorBrush x:Key="AccentMagentaBrush" Color="{StaticResource AccentMagenta}" />
+        <SolidColorBrush x:Key="TextPrimaryBrush" Color="{StaticResource TextPrimary}" />
+        <SolidColorBrush x:Key="TextSecondaryBrush" Color="{StaticResource TextSecondary}" />
+    </Application.Resources>
+</Application>

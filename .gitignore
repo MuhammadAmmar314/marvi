@@ -1,0 +1,25 @@
+# Build & Publish Output
+**/bin/
+**/obj/
+publish/
+dist/
+
+# User Audio & Output Stems
+songs/
+*.wav
+*.mp3
+*.m4a
+*.webm
+
+# Temporary Update Files
+updater_config.json
+MarViUpdate*.zip
+
+# Visual Studio & IDE files
+.vs/
+.idea/
+.vscode/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates

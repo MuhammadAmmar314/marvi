@@ -1,0 +1,49 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <ApplicationTitle>MarVi Karaoke Pro</ApplicationTitle>
+    <RootNamespace>MarViKaraoke</RootNamespace>
+    <AssemblyName>MarViKaraoke</AssemblyName>
+    <ApplicationIcon>Assets\app.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- ManagedBass: Wrapper resmi un4seen BASS (Audio Engine Karaoke Standar Dunia) -->
+    <PackageReference Include="ManagedBass" Version="3.1.1" />
+    <PackageReference Include="ManagedBass.Fx" Version="3.1.1" />
+    
+    <!-- NAudio: Windows Core Audio, WASAPI, dan Mic Recording -->
+    <PackageReference Include="NAudio" Version="2.2.1" />
+
+    <!-- TagLibSharp: Pembaca metadata ID3 dan durasi file audio -->
+    <PackageReference Include="TagLibSharp" Version="2.3.0" />
+
+    <!-- YoutubeExplode: Pencarian dan Pengunduhan Audio YouTube Otomatis -->
+    <PackageReference Include="YoutubeExplode" Version="6.6.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Native un4seen BASS DLLs (x64) -->
+    <None Include="bass.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="bass_fx.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <!-- AI Vocal Remover & Models -->
+    <None Include="tools\**\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <!-- Assets (Logo, Icon) -->
+    <Resource Include="Assets\logo.png" />
+    <None Include="Assets\app.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

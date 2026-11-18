@@ -1,0 +1,477 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v10.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v10.0": {
+      "Example.Simplified/1.0.0": {
+        "dependencies": {
+          "ManagedBass": "3.1.1",
+          "OwnVocalRemover": "1.0.0"
+        },
+        "runtime": {
+          "Example.Simplified.dll": {}
+        }
+      },
+      "Avalonia/12.0.4": {
+        "dependencies": {
+          "Avalonia.Remote.Protocol": "12.0.4",
+          "MicroCom.Runtime": "0.11.4"
+        },
+        "runtime": {
+          "lib/net10.0/Avalonia.Base.dll": {
+            "assemblyVersion": "12.0.4.0",
+            "fileVersion": "12.0.4.0",
+            "localPath": "Avalonia.Base.dll"
+          },
+          "lib/net10.0/Avalonia.Controls.dll": {
+            "assemblyVersion": "12.0.4.0",
+            "fileVersion": "12.0.4.0",
+            "localPath": "Avalonia.Controls.dll"
+          },
+          "lib/net10.0/Avalonia.DesignerSupport.dll": {
+            "assemblyVersion": "0.7.0.0",
+            "fileVersion": "0.7.0.0",
+            "localPath": "Avalonia.DesignerSupport.dll"
+          },
+          "lib/net10.0/Avalonia.Dialogs.dll": {
+            "assemblyVersion": "12.0.4.0",
+            "fileVersion": "12.0.4.0",
+            "localPath": "Avalonia.Dialogs.dll"
+          },
+          "lib/net10.0/Avalonia.Markup.Xaml.dll": {
+            "assemblyVersion": "12.0.4.0",
+            "fileVersion": "12.0.4.0",
+            "localPath": "Avalonia.Markup.Xaml.dll"
+          },
+          "lib/net10.0/Avalonia.Markup.dll": {
+            "assemblyVersion": "12.0.4.0",
+            "fileVersion": "12.0.4.0",
+            "localPath": "Avalonia.Markup.dll"
+          },
+          "lib/net10.0/Avalonia.Metal.dll": {
+            "assemblyVersion": "12.0.4.0",
+            "fileVersion": "12.0.4.0",
+            "localPath": "Avalonia.Metal.dll"
+          },
+          "lib/net10.0/Avalonia.MicroCom.dll": {
+            "assemblyVersion": "12.0.4.0",
+            "fileVersion": "12.0.4.0",
+            "localPath": "Avalonia.MicroCom.dll"
+          },
+          "lib/net10.0/Avalonia.OpenGL.dll": {
+            "assemblyVersion": "12.0.4.0",
+            "fileVersion": "12.0.4.0",
+            "localPath": "Avalonia.OpenGL.dll"
+          },
+          "lib/net10.0/Avalonia.Vulkan.dll": {
+            "assemblyVersion": "12.0.4.0",
+            "fileVersion": "12.0.4.0",
+            "localPath": "Avalonia.Vulkan.dll"
+          },
+          "lib/net10.0/Avalonia.dll": {
+            "assemblyVersion": "12.0.4.0",
+            "fileVersion": "12.0.4.0",
+            "localPath": "Avalonia.dll"
+          }
+        }
+      },
+      "Avalonia.Remote.Protocol/12.0.4": {
+        "runtime": {
+          "lib/net10.0/Avalonia.Remote.Protocol.dll": {
+            "assemblyVersion": "12.0.4.0",
+            "fileVersion": "12.0.4.0",
+            "localPath": "Avalonia.Remote.Protocol.dll"
+          }
+        }
+      },
+      "ManagedBass/3.1.1": {
+        "runtime": {
+          "lib/netstandard1.4/ManagedBass.dll": {
+            "assemblyVersion": "3.1.1.0",
+            "fileVersion": "3.1.1.0",
+            "localPath": "ManagedBass.dll"
+          }
+        }
+      },
+      "MicroCom.Runtime/0.11.4": {
+        "runtime": {
+          "lib/net5.0/MicroCom.Runtime.dll": {
+            "assemblyVersion": "0.11.4.0",
+            "fileVersion": "0.11.4.0",
+            "localPath": "MicroCom.Runtime.dll"
+          }
+        }
+      },
+      "Microsoft.ML.OnnxRuntime/1.26.0": {
+        "dependencies": {
+          "Microsoft.ML.OnnxRuntime.Managed": "1.26.0"
+        },
+        "runtimeTargets": {
+          "runtimes/android/native/onnxruntime.aar": {
+            "rid": "android",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0",
+            "localPath": "runtimes/android/native/onnxruntime.aar"
+          },
+          "runtimes/ios/native/onnxruntime.xcframework.zip": {
+            "rid": "ios",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0",
+            "localPath": "runtimes/ios/native/onnxruntime.xcframework.zip"
+          },
+          "runtimes/linux-arm64/native/libonnxruntime.so": {
+            "rid": "linux-arm64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0",
+            "localPath": "runtimes/linux-arm64/native/libonnxruntime.so"
+          },
+          "runtimes/linux-arm64/native/libonnxruntime_providers_shared.so": {
+            "rid": "linux-arm64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0",
+            "localPath": "runtimes/linux-arm64/native/libonnxruntime_providers_shared.so"
+          },
+          "runtimes/linux-x64/native/libonnxruntime.so": {
+            "rid": "linux-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0",
+            "localPath": "runtimes/linux-x64/native/libonnxruntime.so"
+          },
+          "runtimes/linux-x64/native/libonnxruntime_providers_shared.so": {
+            "rid": "linux-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0",
+            "localPath": "runtimes/linux-x64/native/libonnxruntime_providers_shared.so"
+          },
+          "runtimes/osx-arm64/native/libonnxruntime.dylib": {
+            "rid": "osx-arm64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0",
+            "localPath": "runtimes/osx-arm64/native/libonnxruntime.dylib"
+          },
+          "runtimes/win-arm64/native/onnxruntime.dll": {
+            "rid": "win-arm64",
+            "assetType": "native",
+            "fileVersion": "1.26.26.508",
+            "localPath": "runtimes/win-arm64/native/onnxruntime.dll"
+          },
+          "runtimes/win-arm64/native/onnxruntime.lib": {
+            "rid": "win-arm64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0",
+            "localPath": "runtimes/win-arm64/native/onnxruntime.lib"
+          },
+          "runtimes/win-arm64/native/onnxruntime_providers_shared.dll": {
+            "rid": "win-arm64",
+            "assetType": "native",
+            "fileVersion": "1.26.26.508",
+            "localPath": "runtimes/win-arm64/native/onnxruntime_providers_shared.dll"
+          },
+          "runtimes/win-arm64/native/onnxruntime_providers_shared.lib": {
+            "rid": "win-arm64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0",
+            "localPath": "runtimes/win-arm64/native/onnxruntime_providers_shared.lib"
+          },
+          "runtimes/win-x64/native/onnxruntime.dll": {
+            "rid": "win-x64",
+            "assetType": "native",
+            "fileVersion": "1.26.26.508",
+            "localPath": "runtimes/win-x64/native/onnxruntime.dll"
+          },
+          "runtimes/win-x64/native/onnxruntime.lib": {
+            "rid": "win-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0",
+            "localPath": "runtimes/win-x64/native/onnxruntime.lib"
+          },
+          "runtimes/win-x64/native/onnxruntime_providers_shared.dll": {
+            "rid": "win-x64",
+            "assetType": "native",
+            "fileVersion": "1.26.26.508",
+            "localPath": "runtimes/win-x64/native/onnxruntime_providers_shared.dll"
+          },
+          "runtimes/win-x64/native/onnxruntime_providers_shared.lib": {
+            "rid": "win-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0",
+            "localPath": "runtimes/win-x64/native/onnxruntime_providers_shared.lib"
+          }
+        }
+      },
+      "Microsoft.ML.OnnxRuntime.Managed/1.26.0": {
+        "dependencies": {
+          "System.Numerics.Tensors": "9.0.0"
+        },
+        "runtime": {
+          "lib/net8.0/Microsoft.ML.OnnxRuntime.dll": {
+            "assemblyVersion": "1.26.0.0",
+            "fileVersion": "1.26.0.0",
+            "localPath": "Microsoft.ML.OnnxRuntime.dll"
+          }
+        }
+      },
+      "OwnAudioSharp/3.1.7": {
+        "dependencies": {
+          "Avalonia": "12.0.4",
+          "Microsoft.ML.OnnxRuntime": "1.26.0",
+          "OwnAudioSharp.Midi": "3.1.0",
+          "OwnAudioVst": "1.6.4"
+        },
+        "runtime": {
+          "lib/net10.0/Ownaudio.Core.dll": {
+            "assemblyVersion": "3.4.0.0",
+            "fileVersion": "3.4.0.0",
+            "localPath": "Ownaudio.Core.dll"
+          },
+          "lib/net10.0/Ownaudio.Native.dll": {
+            "assemblyVersion": "3.3.1.0",
+            "fileVersion": "3.3.1.0",
+            "localPath": "Ownaudio.Native.dll"
+          },
+          "lib/net10.0/OwnaudioNET.dll": {
+            "assemblyVersion": "0.0.0.0",
+            "fileVersion": "0.0.0.0",
+            "localPath": "OwnaudioNET.dll"
+          }
+        },
+        "runtimeTargets": {
+          "runtimes/linux-arm/native/libminiaudio.so": {
+            "rid": "linux-arm",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0",
+            "localPath": "runtimes/linux-arm/native/libminiaudio.so"
+          },
+          "runtimes/linux-arm64/native/libminiaudio.so": {
+            "rid": "linux-arm64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0",
+            "localPath": "runtimes/linux-arm64/native/libminiaudio.so"
+          },
+          "runtimes/linux-x64/native/libminiaudio.so": {
+            "rid": "linux-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0",
+            "localPath": "runtimes/linux-x64/native/libminiaudio.so"
+          },
+          "runtimes/osx-arm64/native/libminiaudio.dylib": {
+            "rid": "osx-arm64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0",
+            "localPath": "runtimes/osx-arm64/native/libminiaudio.dylib"
+          },
+          "runtimes/osx-x64/native/libminiaudio.dylib": {
+            "rid": "osx-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0",
+            "localPath": "runtimes/osx-x64/native/libminiaudio.dylib"
+          },
+          "runtimes/win-arm64/native/libminiaudio.dll": {
+            "rid": "win-arm64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0",
+            "localPath": "runtimes/win-arm64/native/libminiaudio.dll"
+          },
+          "runtimes/win-arm64/native/libportaudio.dll": {
+            "rid": "win-arm64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0",
+            "localPath": "runtimes/win-arm64/native/libportaudio.dll"
+          },
+          "runtimes/win-x64/native/libminiaudio.dll": {
+            "rid": "win-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0",
+            "localPath": "runtimes/win-x64/native/libminiaudio.dll"
+          },
+          "runtimes/win-x64/native/libportaudio.dll": {
+            "rid": "win-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0",
+            "localPath": "runtimes/win-x64/native/libportaudio.dll"
+          },
+          "runtimes/win-x86/native/libminiaudio.dll": {
+            "rid": "win-x86",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0",
+            "localPath": "runtimes/win-x86/native/libminiaudio.dll"
+          }
+        }
+      },
+      "OwnAudioSharp.Midi/3.1.0": {
+        "runtime": {
+          "lib/net10.0/OwnAudio.Midi.dll": {
+            "assemblyVersion": "3.1.0.0",
+            "fileVersion": "3.1.0.0",
+            "localPath": "OwnAudio.Midi.dll"
+          }
+        }
+      },
+      "OwnAudioVst/1.6.4": {
+        "runtime": {
+          "lib/net10.0/OwnVST3Host.dll": {
+            "assemblyVersion": "1.6.4.0",
+            "fileVersion": "1.6.4.0",
+            "localPath": "OwnVST3Host.dll"
+          }
+        },
+        "runtimeTargets": {
+          "runtimes/linux-arm64/native/libownvst3.so": {
+            "rid": "linux-arm64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0",
+            "localPath": "runtimes/linux-arm64/native/libownvst3.so"
+          },
+          "runtimes/linux-x64/native/libownvst3.so": {
+            "rid": "linux-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0",
+            "localPath": "runtimes/linux-x64/native/libownvst3.so"
+          },
+          "runtimes/osx-arm64/native/libownvst3.dylib": {
+            "rid": "osx-arm64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0",
+            "localPath": "runtimes/osx-arm64/native/libownvst3.dylib"
+          },
+          "runtimes/osx-x64/native/libownvst3.dylib": {
+            "rid": "osx-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0",
+            "localPath": "runtimes/osx-x64/native/libownvst3.dylib"
+          },
+          "runtimes/osx/native/libownvst3.dylib": {
+            "rid": "osx",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0",
+            "localPath": "runtimes/osx/native/libownvst3.dylib"
+          },
+          "runtimes/win-arm64/native/ownvst3.dll": {
+            "rid": "win-arm64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0",
+            "localPath": "runtimes/win-arm64/native/ownvst3.dll"
+          },
+          "runtimes/win-x64/native/ownvst3.dll": {
+            "rid": "win-x64",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0",
+            "localPath": "runtimes/win-x64/native/ownvst3.dll"
+          },
+          "runtimes/win-x86/native/ownvst3.dll": {
+            "rid": "win-x86",
+            "assetType": "native",
+            "fileVersion": "0.0.0.0",
+            "localPath": "runtimes/win-x86/native/ownvst3.dll"
+          }
+        }
+      },
+      "System.Numerics.Tensors/9.0.0": {
+        "runtime": {
+          "lib/net9.0/System.Numerics.Tensors.dll": {
+            "assemblyVersion": "9.0.0.0",
+            "fileVersion": "9.0.24.52809",
+            "localPath": "System.Numerics.Tensors.dll"
+          }
+        }
+      },
+      "OwnVocalRemover/1.0.0": {
+        "dependencies": {
+          "Microsoft.ML.OnnxRuntime": "1.26.0",
+          "OwnAudioSharp": "3.1.7"
+        },
+        "runtime": {
+          "OwnVocalRemover.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Example.Simplified/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Avalonia/12.0.4": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-0ehIUuOVaR3OmsL8YK8v9yCCnOpzRtQSDgP5Nh2fMc+Lji8WoVGD+J6nvwkGjCH5hbm1urgvkVYWAYWkby0EeQ==",
+      "path": "avalonia/12.0.4",
+      "hashPath": "avalonia.12.0.4.nupkg.sha512"
+    },
+    "Avalonia.Remote.Protocol/12.0.4": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Cvnzp2KTO7BScBPnn4Q91PmVwLvv19of+ZxrN3KFHYQe8in0qNaefZgOHGEiXZ841WpdO3VUFw7qvxv/1RTTGg==",
+      "path": "avalonia.remote.protocol/12.0.4",
+      "hashPath": "avalonia.remote.protocol.12.0.4.nupkg.sha512"
+    },
+    "ManagedBass/3.1.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-qaIIM2VEmZ9DaNCIu306aXi5zS8LZQjo0SNkLb3AjkpxKXA9K/O/LndCogC+cJPb2IKeChJEEXR42JEe6UTq/A==",
+      "path": "managedbass/3.1.1",
+      "hashPath": "managedbass.3.1.1.nupkg.sha512"
+    },
+    "MicroCom.Runtime/0.11.4": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-yZ8+Lgwo+KtRI29TB2mIOEMzV+csMJ+pKZg4YHReAP3vRewWLKKeYfrBDo5FS69rWnEbCfU3sbM+ZEQr+GDLtg==",
+      "path": "microcom.runtime/0.11.4",
+      "hashPath": "microcom.runtime.0.11.4.nupkg.sha512"
+    },
+    "Microsoft.ML.OnnxRuntime/1.26.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-wiylawSnyspmJdZxilJUuUq3Tp/nT9BsngHHKvrCGWsADo15Z7y0G6kYAU0Pqb5af+f/EzwIi2aHaNUlzp/eww==",
+      "path": "microsoft.ml.onnxruntime/1.26.0",
+      "hashPath": "microsoft.ml.onnxruntime.1.26.0.nupkg.sha512"
+    },
+    "Microsoft.ML.OnnxRuntime.Managed/1.26.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-hEmwYh5WL8n1xjNvmfdSUOqGGXAKCLtxfgUfGZRRAen9IWuSk7ieoBFH08+wlrYp1Vma80HtAirL3QLDbTeEzQ==",
+      "path": "microsoft.ml.onnxruntime.managed/1.26.0",
+      "hashPath": "microsoft.ml.onnxruntime.managed.1.26.0.nupkg.sha512"
+    },
+    "OwnAudioSharp/3.1.7": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-C4iC8dBPq05QVV29vDwsNUXFqFaYcGX7wwqtsgFVtNdbk7o0/LbxRKh5NaXrQL823w8qR+qEuyQhDqdAd8mkyA==",
+      "path": "ownaudiosharp/3.1.7",
+      "hashPath": "ownaudiosharp.3.1.7.nupkg.sha512"
+    },
+    "OwnAudioSharp.Midi/3.1.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-UnVkpvxhaLu99S2viOa6LeQ5/srSOs77ANt81ENJY4Z+1Ctgha7kk51uR6gxpp15v/IS3wP0zTwM+NQk5tG9nw==",
+      "path": "ownaudiosharp.midi/3.1.0",
+      "hashPath": "ownaudiosharp.midi.3.1.0.nupkg.sha512"
+    },
+    "OwnAudioVst/1.6.4": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-wyJD3FlPdNhFK8tugThoic297x+PPUTCBdIHvZxB50ua93JfBl83rW5dWzhZut3Uoffz31UmexLbQnCGRy4ADQ==",
+      "path": "ownaudiovst/1.6.4",
+      "hashPath": "ownaudiovst.1.6.4.nupkg.sha512"
+    },
+    "System.Numerics.Tensors/9.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-hyJB4UlpAi19Xr9AXzu2NuagKC4lPfHObNMEAA0HmqFz2rX7wKgzeYzO/jM/eBHDhnUGFFEjk5cOoJaxqg5J4A==",
+      "path": "system.numerics.tensors/9.0.0",
+      "hashPath": "system.numerics.tensors.9.0.0.nupkg.sha512"
+    },
+    "OwnVocalRemover/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

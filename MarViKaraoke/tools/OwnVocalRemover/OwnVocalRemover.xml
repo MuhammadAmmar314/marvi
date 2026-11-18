@@ -1,0 +1,1012 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>OwnVocalRemover</name>
+    </assembly>
+    <members>
+        <member name="T:OwnVocalRemover.HTDemucsAudioSeparator">
+             <summary>
+             HTDemucs-based audio separation service for stem extraction.
+             Optimized for streaming processing with minimal memory footprint.
+             Uses OwnAudioEngine converters for high-performance audio processing.
+             </summary>
+             <remarks>
+             HTDemucs (Hybrid Transformer Demucs) separates audio into 4 stems:
+             - Vocals: singing and speech
+             - Drums: percussion instruments
+             - Bass: bass guitar and low-frequency instruments
+             - Other: all other instruments
+            
+             Performance characteristics:
+             - CPU processing: ~10-15x realtime (16 cores)
+             - GPU processing: ~50-100x realtime (CUDA)
+             - Memory footprint: ~500-800 MB for 10s chunks
+             </remarks>
+        </member>
+        <member name="E:OwnVocalRemover.HTDemucsAudioSeparator.ProgressChanged">
+            <summary>
+            Progress update event
+            </summary>
+        </member>
+        <member name="E:OwnVocalRemover.HTDemucsAudioSeparator.ProcessingCompleted">
+            <summary>
+            Processing completed event
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.HTDemucsAudioSeparator.#ctor(OwnVocalRemover.HTDemucsSeparationOptions)">
+            <summary>
+            Initialize HTDemucs audio separation service
+            </summary>
+            <param name="options">Separation configuration options</param>
+        </member>
+        <member name="M:OwnVocalRemover.HTDemucsAudioSeparator.Initialize">
+            <summary>
+            Initialize the ONNX model session
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.HTDemucsAudioSeparator.Separate(System.String)">
+            <summary>
+            Separate audio file into stems
+            </summary>
+            <param name="inputFilePath">Input audio file path</param>
+            <returns>Separation result with stem file paths</returns>
+        </member>
+        <member name="M:OwnVocalRemover.HTDemucsAudioSeparator.Dispose">
+            <summary>
+            Dispose resources
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.HTDemucsAudioSeparator.AutoDetectModelParameters">
+            <summary>
+            Auto-detect model parameters from ONNX metadata
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.HTDemucsAudioSeparator.SaveResults(System.String,System.Collections.Generic.Dictionary{OwnVocalRemover.HTDemucsStem,System.Single[0:,0:]},System.Int32)">
+            <summary>
+            Save separated stems to WAV files
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.HTDemucsAudioSeparator.SaveAudio(System.String,System.Single[0:,0:],System.Int32)">
+            <summary>
+            Save audio data to WAV file with normalization
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.HTDemucsAudioSeparator.ApplyOverlapAdd(System.Collections.Generic.Dictionary{OwnVocalRemover.HTDemucsStem,System.Single[0:,0:]},System.Collections.Generic.Dictionary{OwnVocalRemover.HTDemucsStem,System.Single[0:,0:]},System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Apply overlap-add reconstruction with linear crossfade
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.HTDemucsAudioSeparator.CopyAudioRegion(System.Single[0:,0:],System.Single[0:,0:],System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Copy audio data from source to target
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.HTDemucsAudioSeparator.BlendOverlap(System.Single[0:,0:],System.Single[0:,0:],System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Blend overlapping region with constant-power crossfade.
+            Uses cosine-based fade to maintain constant energy across transition.
+            </summary>
+        </member>
+        <member name="T:OwnVocalRemover.HTDemucsAudioSeparator.HTDemucsProcessingContext">
+            <summary>
+            Processing context for buffer reuse and GC pressure reduction
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.HTDemucsAudioSeparator.ProcessAudioStreaming(System.String)">
+            <summary>
+            Process audio file using margin-trimming approach to eliminate edge artifacts
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.HTDemucsAudioSeparator.InitializeStemBuffers(System.Int32)">
+            <summary>
+            Initialize stem buffers for all target stems
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.HTDemucsAudioSeparator.ReadEntireAudio(Ownaudio.Decoders.IAudioDecoder,System.Int32)">
+            <summary>
+            Read entire audio into memory for context window access
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.HTDemucsAudioSeparator.ExtractWindowWithPadding(System.Single[0:,0:],System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Extract window with reflection padding at boundaries
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.HTDemucsAudioSeparator.TrimMargins(System.Collections.Generic.Dictionary{OwnVocalRemover.HTDemucsStem,System.Single[0:,0:]},System.Int32,System.Int32)">
+            <summary>
+            Trim margins from separated stems output
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.HTDemucsAudioSeparator.ApplyTrimmedOverlapAdd(System.Collections.Generic.Dictionary{OwnVocalRemover.HTDemucsStem,System.Single[0:,0:]},System.Collections.Generic.Dictionary{OwnVocalRemover.HTDemucsStem,System.Single[0:,0:]},System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Apply trimmed chunks with crossfade overlap
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.HTDemucsAudioSeparator.PadChunk(System.Single[0:,0:],System.Int32)">
+            <summary>
+            Pad chunk to required size
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.HTDemucsAudioSeparator.ReadAudioWindow(Ownaudio.Decoders.IAudioDecoder,System.Int32,System.Int32,System.Int32,OwnaudioNET.BufferManagement.AudioBufferPool)">
+            <summary>
+            Read audio data into a sliding window buffer
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.HTDemucsAudioSeparator.ProcessChunk(System.Single[0:,0:],OwnVocalRemover.HTDemucsAudioSeparator.HTDemucsProcessingContext)">
+            <summary>
+            Process a single audio chunk through HTDemucs model
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.HTDemucsAudioSeparator.ExtractStems(OwnVocalRemover.OrtTensor,System.Int32)">
+            <summary>
+            Extract individual stems from model output tensor (single-output fallback path)
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.HTDemucsAudioSeparator.ExtractStemsFromDualBranch(OwnVocalRemover.OrtTensor,OwnVocalRemover.OrtTensor,System.Int32)">
+            <summary>
+            Extract individual stems by merging BOTH frequency and time branches.
+            This is the CORRECT approach for HTDemucs hybrid model.
+            Python reference (htdemucs.py line 661): final = time_branch + freq_branch_after_istft
+            </summary>
+            <param name="freqSpectrograms">Frequency branch: [batch, stems, 4, freq_bins, time_frames]</param>
+            <param name="timeWaveforms">Time branch: [batch, stems, channels, samples]</param>
+            <param name="targetLength">Target length to trim/pad to</param>
+        </member>
+        <member name="T:OwnVocalRemover.HTDemucsSeparationOptions">
+            <summary>
+            Configuration parameters for HTDemucs audio separation
+            </summary>
+        </member>
+        <member name="P:OwnVocalRemover.HTDemucsSeparationOptions.ModelPath">
+            <summary>
+            ONNX model file path (optional if using InternalModel)
+            </summary>
+        </member>
+        <member name="P:OwnVocalRemover.HTDemucsSeparationOptions.Model">
+            <summary>
+            Internal embedded model to use (if ModelPath is not specified)
+            </summary>
+        </member>
+        <member name="P:OwnVocalRemover.HTDemucsSeparationOptions.OutputDirectory">
+            <summary>
+            Output directory path
+            </summary>
+        </member>
+        <member name="P:OwnVocalRemover.HTDemucsSeparationOptions.ChunkSizeSeconds">
+            <summary>
+            Chunk size in seconds (10-30 seconds recommended for HTDemucs)
+            </summary>
+        </member>
+        <member name="P:OwnVocalRemover.HTDemucsSeparationOptions.OverlapFactor">
+            <summary>
+            Overlap factor for chunk processing (0.0-0.5, recommended 0.25)
+            </summary>
+        </member>
+        <member name="P:OwnVocalRemover.HTDemucsSeparationOptions.EnableGPU">
+            <summary>
+            Enable GPU acceleration (CUDA/DirectML)
+            </summary>
+        </member>
+        <member name="P:OwnVocalRemover.HTDemucsSeparationOptions.TargetStems">
+            <summary>
+            Target stems to extract
+            </summary>
+        </member>
+        <member name="P:OwnVocalRemover.HTDemucsSeparationOptions.TargetSampleRate">
+            <summary>
+            Target sample rate (default: 44100 Hz)
+            </summary>
+        </member>
+        <member name="P:OwnVocalRemover.HTDemucsSeparationOptions.SegmentLength">
+            <summary>
+            Model-specific segment length override (0 = auto-detect from model)
+            </summary>
+        </member>
+        <member name="P:OwnVocalRemover.HTDemucsSeparationOptions.MarginSeconds">
+            <summary>
+            Margin to trim from chunk edges in seconds (to remove model warm-up artifacts).
+            Default: 0.5 seconds
+            </summary>
+        </member>
+        <member name="P:OwnVocalRemover.HTDemucsSeparationOptions.CrossfadeSeconds">
+            <summary>
+            Crossfade duration for valid regions in seconds.
+            Default: 0.05 seconds (50ms)
+            </summary>
+        </member>
+        <member name="T:OwnVocalRemover.HTDemucsStem">
+            <summary>
+            HTDemucs stem types
+            </summary>
+        </member>
+        <member name="F:OwnVocalRemover.HTDemucsStem.Vocals">
+            <summary>
+            Vocal stem
+            </summary>
+        </member>
+        <member name="F:OwnVocalRemover.HTDemucsStem.Drums">
+            <summary>
+            Drums stem
+            </summary>
+        </member>
+        <!-- Badly formed XML comment ignored for member "F:OwnVocalRemover.HTDemucsStem.Bass" -->
+        <member name="F:OwnVocalRemover.HTDemucsStem.Other">
+            <summary>
+            Other instruments stem
+            </summary>
+        </member>
+        <member name="F:OwnVocalRemover.HTDemucsStem.All">
+            <summary>
+            All stems
+            </summary>
+        </member>
+        <member name="T:OwnVocalRemover.HTDemucsSeparationProgress">
+            <summary>
+            Progress information for HTDemucs separation process
+            </summary>
+        </member>
+        <member name="P:OwnVocalRemover.HTDemucsSeparationProgress.CurrentFile">
+            <summary>
+            Current file being processed
+            </summary>
+        </member>
+        <member name="P:OwnVocalRemover.HTDemucsSeparationProgress.OverallProgress">
+            <summary>
+            Overall progress percentage (0-100)
+            </summary>
+        </member>
+        <member name="P:OwnVocalRemover.HTDemucsSeparationProgress.Status">
+            <summary>
+            Current processing step description
+            </summary>
+        </member>
+        <member name="P:OwnVocalRemover.HTDemucsSeparationProgress.ProcessedChunks">
+            <summary>
+            Number of chunks processed
+            </summary>
+        </member>
+        <member name="P:OwnVocalRemover.HTDemucsSeparationProgress.TotalChunks">
+            <summary>
+            Total number of chunks
+            </summary>
+        </member>
+        <member name="P:OwnVocalRemover.HTDemucsSeparationProgress.CurrentStem">
+            <summary>
+            Current stem being processed
+            </summary>
+        </member>
+        <member name="T:OwnVocalRemover.HTDemucsSeparationResult">
+            <summary>
+            Result of HTDemucs audio separation
+            </summary>
+        </member>
+        <member name="P:OwnVocalRemover.HTDemucsSeparationResult.StemPaths">
+            <summary>
+            Paths to separated stem files
+            </summary>
+        </member>
+        <member name="P:OwnVocalRemover.HTDemucsSeparationResult.ProcessingTime">
+            <summary>
+            Processing duration
+            </summary>
+        </member>
+        <member name="P:OwnVocalRemover.HTDemucsSeparationResult.StemCount">
+            <summary>
+            Number of stems extracted
+            </summary>
+        </member>
+        <member name="P:OwnVocalRemover.HTDemucsSeparationResult.AudioDuration">
+            <summary>
+            Source audio duration
+            </summary>
+        </member>
+        <member name="T:OwnVocalRemover.HTDemucsExtensions">
+            <summary>
+            Helper extension methods for HTDemucs audio separation
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.HTDemucsExtensions.CreateDefaultSeparator(System.String)">
+            <summary>
+            Creates a default HTDemucs separator instance using embedded model
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.HTDemucsExtensions.CreateFromFile(System.String,System.String)">
+            <summary>
+            Creates a HTDemucs separator using external model file
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.HTDemucsExtensions.CreateStemSelector(OwnVocalRemover.HTDemucsStem,System.String)">
+            <summary>
+            Creates a separator for specific stems only (using embedded model)
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.HTDemucsExtensions.CreateVocalsOnly(System.String)">
+            <summary>Creates a separator that extracts only the vocals stem.</summary>
+        </member>
+        <member name="M:OwnVocalRemover.HTDemucsExtensions.CreateAllStems(System.String)">
+            <summary>Creates a separator that extracts all stems (vocals, drums, bass, other).</summary>
+        </member>
+        <member name="M:OwnVocalRemover.HTDemucsExtensions.CreateWithModel(System.String,System.String)">
+            <summary>Creates a separator using an external ONNX model file with all stems.</summary>
+        </member>
+        <member name="M:OwnVocalRemover.HTDemucsExtensions.IsValidAudioFile(System.String)">
+            <summary>
+            Validate audio file format
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.HTDemucsExtensions.EstimateProcessingTime(System.String,System.Boolean)">
+            <summary>
+            Get estimated processing time based on file size
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.HTDemucsExtensions.GetStemName(OwnVocalRemover.HTDemucsStem)">
+            <summary>
+            Get stem name as human-readable string
+            </summary>
+        </member>
+        <member name="T:OwnVocalRemover.MultiModelAudioSeparator">
+             <summary>
+             Multi-model audio separation service with averaging across multiple UVR MDX models.
+             Processes audio through multiple models in parallel and averages their outputs.
+             Each model processes the original audio independently, then vocals and instrumentals
+             are averaged separately across all models.
+            
+             Example use case:
+             Model 1: High-quality vocal separation (outputs vocals)
+             Model 2: Another vocal model with different characteristics (outputs vocals)
+             Model 3: Instrumental-focused model (outputs instrumental)
+             Result: Averaged vocals and averaged instrumental with better quality than any single model
+            
+             Important: Configure each model's OutputType (Vocals or Instrumental) to handle
+             models that output different stems.
+             </summary>
+        </member>
+        <member name="E:OwnVocalRemover.MultiModelAudioSeparator.ProgressChanged">
+            <summary>Progress update event</summary>
+        </member>
+        <member name="E:OwnVocalRemover.MultiModelAudioSeparator.ProcessingCompleted">
+            <summary>Processing completed event</summary>
+        </member>
+        <member name="M:OwnVocalRemover.MultiModelAudioSeparator.#ctor(OwnVocalRemover.MultiModelSeparationOptions)">
+            <summary>
+            Initialize multi-model audio separation service
+            </summary>
+            <param name="options">Separation configuration options</param>
+        </member>
+        <member name="M:OwnVocalRemover.MultiModelAudioSeparator.Initialize">
+            <summary>
+            Initialize all ONNX model sessions
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.MultiModelAudioSeparator.Separate(System.String)">
+            <summary>
+            Separate audio file through the multi-model pipeline using streaming
+            </summary>
+            <param name="inputFilePath">Input audio file path</param>
+            <returns>Separation result</returns>
+        </member>
+        <member name="M:OwnVocalRemover.MultiModelAudioSeparator.Dispose">
+            <summary>
+            Dispose resources
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.MultiModelAudioSeparator.RunModelInference(OwnVocalRemover.OrtTensor,OwnVocalRemover.MultiModelAudioSeparator.ModelSession)">
+            <summary>
+            Run model inference - AOT-compatible via OrtRunner / OrtTensor
+            </summary>
+        </member>
+        <member name="T:OwnVocalRemover.MultiModelAudioSeparator.ModelSession">
+            <summary>
+            Holds ONNX session and parameters for a single model
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.MultiModelAudioSeparator.InitializeModel(OwnVocalRemover.MultiModelInfo)">
+            <summary>
+            Initialize a single model session
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.MultiModelAudioSeparator.AutoDetectOutputType(OwnVocalRemover.MultiModelInfo,Microsoft.ML.OnnxRuntime.InferenceSession)">
+            <summary>
+            Auto-detect output type from ONNX metadata and filename
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.MultiModelAudioSeparator.AutoDetectModelDimensions(Microsoft.ML.OnnxRuntime.InferenceSession,OwnVocalRemover.ModelParameters@,System.String)">
+            <summary>
+            Auto-detect model dimensions from ONNX metadata
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.MultiModelAudioSeparator.PreCalculateHanningWindow(System.Int32)">
+            <summary>
+            Pre-calculate Hanning window for STFT/ISTFT optimization
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.MultiModelAudioSeparator.SaveAudio(System.String,System.Single[0:,0:],System.Int32)">
+            <summary>
+            Save audio to WAV file
+            </summary>
+        </member>
+        <member name="T:OwnVocalRemover.MultiModelAudioSeparator.ProcessingContext">
+            <summary>
+            Processing context to reuse buffers and reduce GC pressure
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.MultiModelAudioSeparator.ProcessAudioStreamingPipeline(System.String,System.String,System.Collections.Generic.Dictionary{System.String,System.String}@)">
+            <summary>
+            Process audio file using streaming pipeline with multi-model averaging.
+            Each chunk is processed through ALL models in parallel, then vocals and instrumentals are averaged separately.
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.MultiModelAudioSeparator.ProcessSingleChunk(System.Single[0:,0:],OwnVocalRemover.MultiModelAudioSeparator.ModelSession,OwnVocalRemover.MultiModelAudioSeparator.ProcessingContext)">
+            <summary>
+            Process a single audio chunk through a model
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.MultiModelAudioSeparator.ComputeStftOptimized(System.Single[0:,0:,0:],OwnVocalRemover.ModelParameters,OwnVocalRemover.MultiModelAudioSeparator.ProcessingContext)">
+            <summary>
+            Compute STFT with pre-calculated Hanning window
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.MultiModelAudioSeparator.ComputeIstftOptimized(OwnVocalRemover.OrtTensor,OwnVocalRemover.ModelParameters,OwnVocalRemover.MultiModelAudioSeparator.ProcessingContext)">
+            <summary>
+            Compute ISTFT with pre-calculated Hanning window
+            </summary>
+        </member>
+        <member name="T:OwnVocalRemover.ModelOutputType">
+            <summary>
+            Specifies what the model outputs
+            </summary>
+        </member>
+        <member name="F:OwnVocalRemover.ModelOutputType.Instrumental">
+            <summary>Model outputs the instrumental track (vocals will be calculated as original - instrumental)</summary>
+        </member>
+        <member name="F:OwnVocalRemover.ModelOutputType.Vocals">
+            <summary>Model outputs the vocal track (instrumental will be calculated as original - vocals)</summary>
+        </member>
+        <member name="T:OwnVocalRemover.MultiModelInfo">
+            <summary>
+            Information about a single model in the pipeline
+            </summary>
+        </member>
+        <member name="P:OwnVocalRemover.MultiModelInfo.Name">
+            <summary>Model display name</summary>
+        </member>
+        <member name="P:OwnVocalRemover.MultiModelInfo.ModelPath">
+            <summary>ONNX model file path (optional if using InternalModel)</summary>
+        </member>
+        <member name="P:OwnVocalRemover.MultiModelInfo.Model">
+            <summary>Internal embedded model to use</summary>
+        </member>
+        <member name="P:OwnVocalRemover.MultiModelInfo.NFft">
+            <summary>FFT size for this model (0 = auto-detect)</summary>
+        </member>
+        <member name="P:OwnVocalRemover.MultiModelInfo.DimT">
+            <summary>Temporal dimension parameter (as power of 2)</summary>
+        </member>
+        <member name="P:OwnVocalRemover.MultiModelInfo.DimF">
+            <summary>Frequency dimension parameter</summary>
+        </member>
+        <member name="P:OwnVocalRemover.MultiModelInfo.DisableNoiseReduction">
+            <summary>Disable noise reduction for this model</summary>
+        </member>
+        <member name="P:OwnVocalRemover.MultiModelInfo.SaveIntermediateOutput">
+            <summary>Save intermediate output from this model (for debugging)</summary>
+        </member>
+        <member name="P:OwnVocalRemover.MultiModelInfo.OutputType">
+            <summary>
+            Specifies what this model outputs (Vocals or Instrumental).
+            If null, the system will try to auto-detect from model metadata or filename.
+            Default is Instrumental (most common for UVR models)
+            </summary>
+        </member>
+        <member name="T:OwnVocalRemover.MultiModelSeparationOptions">
+            <summary>
+            Configuration parameters for multi-model audio separation
+            </summary>
+        </member>
+        <member name="P:OwnVocalRemover.MultiModelSeparationOptions.Models">
+            <summary>List of models to process in sequence</summary>
+        </member>
+        <member name="P:OwnVocalRemover.MultiModelSeparationOptions.OutputDirectory">
+            <summary>Output directory path</summary>
+        </member>
+        <member name="P:OwnVocalRemover.MultiModelSeparationOptions.EnableGPU">
+            <summary>Enable GPU acceleration (CoreML on macOS, CUDA on other platforms)</summary>
+        </member>
+        <member name="P:OwnVocalRemover.MultiModelSeparationOptions.Margin">
+            <summary>Margin size for overlapping chunks (in samples)</summary>
+        </member>
+        <member name="P:OwnVocalRemover.MultiModelSeparationOptions.ChunkSizeSeconds">
+            <summary>Chunk size in seconds (0 = process entire file at once)</summary>
+        </member>
+        <member name="P:OwnVocalRemover.MultiModelSeparationOptions.SaveAllIntermediateResults">
+            <summary>Save intermediate results after each model (for debugging)</summary>
+        </member>
+        <member name="T:OwnVocalRemover.MultiModelSeparationProgress">
+            <summary>
+            Progress information for multi-model separation
+            </summary>
+        </member>
+        <member name="P:OwnVocalRemover.MultiModelSeparationProgress.CurrentFile">
+            <summary>Current file being processed</summary>
+        </member>
+        <member name="P:OwnVocalRemover.MultiModelSeparationProgress.OverallProgress">
+            <summary>Overall progress percentage (0-100)</summary>
+        </member>
+        <member name="P:OwnVocalRemover.MultiModelSeparationProgress.Status">
+            <summary>Current processing step description</summary>
+        </member>
+        <member name="P:OwnVocalRemover.MultiModelSeparationProgress.CurrentModelIndex">
+            <summary>Current model being processed (1-based index)</summary>
+        </member>
+        <member name="P:OwnVocalRemover.MultiModelSeparationProgress.TotalModels">
+            <summary>Total number of models in pipeline</summary>
+        </member>
+        <member name="P:OwnVocalRemover.MultiModelSeparationProgress.CurrentModelName">
+            <summary>Current model name</summary>
+        </member>
+        <member name="P:OwnVocalRemover.MultiModelSeparationProgress.ProcessedChunks">
+            <summary>Number of chunks processed for current model</summary>
+        </member>
+        <member name="P:OwnVocalRemover.MultiModelSeparationProgress.TotalChunks">
+            <summary>Total number of chunks for current model</summary>
+        </member>
+        <member name="T:OwnVocalRemover.MultiModelSeparationResult">
+            <summary>
+            Result of multi-model audio separation
+            </summary>
+        </member>
+        <member name="P:OwnVocalRemover.MultiModelSeparationResult.OutputPath">
+            <summary>Path to the final separated output file (averaged instrumental from all models)</summary>
+        </member>
+        <member name="P:OwnVocalRemover.MultiModelSeparationResult.VocalsPath">
+            <summary>Path to the vocals file (averaged vocals from all models)</summary>
+        </member>
+        <member name="P:OwnVocalRemover.MultiModelSeparationResult.InstrumentalPath">
+            <summary>Path to the instrumental file (averaged instrumental from all models)</summary>
+        </member>
+        <member name="P:OwnVocalRemover.MultiModelSeparationResult.IntermediatePaths">
+            <summary>Paths to intermediate results (if saved)</summary>
+        </member>
+        <member name="P:OwnVocalRemover.MultiModelSeparationResult.ProcessingTime">
+            <summary>Processing duration</summary>
+        </member>
+        <member name="P:OwnVocalRemover.MultiModelSeparationResult.ModelsProcessed">
+            <summary>Number of models processed</summary>
+        </member>
+        <member name="T:OwnVocalRemover.MultiModelExtensions">
+            <summary>
+            Helper extension methods for multi-model audio separation with averaging
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.MultiModelExtensions.CreateSimplePipeline(OwnVocalRemover.InternalModel,OwnVocalRemover.InternalModel,System.String,System.Nullable{OwnVocalRemover.ModelOutputType},System.Nullable{OwnVocalRemover.ModelOutputType})">
+            <summary>
+            Creates a simple 2-model averaging pipeline with default settings.
+            Both models process the original audio independently and results are averaged.
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.MultiModelExtensions.CreateTriplePipeline(OwnVocalRemover.InternalModel,OwnVocalRemover.InternalModel,OwnVocalRemover.InternalModel,System.String,System.Nullable{OwnVocalRemover.ModelOutputType},System.Nullable{OwnVocalRemover.ModelOutputType},System.Nullable{OwnVocalRemover.ModelOutputType})">
+            <summary>
+            Creates a 3-model averaging pipeline with default settings.
+            All models process the original audio independently and results are averaged.
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.MultiModelExtensions.IsValidAudioFile(System.String)">
+            <summary>
+            Validates that a file path points to a supported audio format
+            </summary>
+        </member>
+        <member name="T:OwnVocalRemover.OrtTensor">
+            <summary>
+            AOT-compatible float tensor replacing DenseTensor&lt;float&gt; / Tensor&lt;float&gt;
+            from Microsoft.ML.OnnxRuntime.Tensors.
+            Stores data in row-major flat float[] with explicit shape.
+            </summary>
+        </member>
+        <member name="T:OwnVocalRemover.OrtRunner">
+            <summary>
+            AOT-compatible ONNX inference helpers.
+            Uses OrtValue API (OnnxRuntime 1.16+) instead of NamedOnnxValue / DenseTensor,
+            which rely on reflection and are not compatible with Native AOT compilation.
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.OrtRunner.Run(Microsoft.ML.OnnxRuntime.InferenceSession,OwnVocalRemover.OrtTensor,System.String,System.String)">
+            <summary>
+            Run single-input, single-output model inference.
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.OrtRunner.Run(Microsoft.ML.OnnxRuntime.InferenceSession,System.ValueTuple{System.String,OwnVocalRemover.OrtTensor}[],System.String[])">
+            <summary>
+            Run model with arbitrary inputs and outputs.
+            </summary>
+        </member>
+        <member name="T:OwnVocalRemover.SimpleAudioSeparationService">
+            <summary>
+            Simplified audio separation service without async operations.
+            Optimized for streaming processing with minimal memory footprint.
+            </summary>
+        </member>
+        <member name="E:OwnVocalRemover.SimpleAudioSeparationService.ProgressChanged">
+            <summary>Progress update event</summary>
+        </member>
+        <member name="E:OwnVocalRemover.SimpleAudioSeparationService.ProcessingCompleted">
+            <summary>Processing completed event</summary>
+        </member>
+        <member name="M:OwnVocalRemover.SimpleAudioSeparationService.#ctor(OwnVocalRemover.SimpleSeparationOptions)">
+            <summary>
+            Initialize audio separation service
+            </summary>
+            <param name="options">Separation configuration options</param>
+        </member>
+        <member name="M:OwnVocalRemover.SimpleAudioSeparationService.Initialize">
+            <summary>
+            Initialize the ONNX model session
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.SimpleAudioSeparationService.Separate(System.String)">
+            <summary>
+            Separate audio file into vocals and instrumental tracks
+            </summary>
+            <param name="inputFilePath">Input audio file path</param>
+            <returns>Separation result</returns>
+        </member>
+        <member name="M:OwnVocalRemover.SimpleAudioSeparationService.Dispose">
+            <summary>
+            Dispose resources
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.SimpleAudioSeparationService.AutoDetectModelDimensions">
+            <summary>
+            Automatically detect model dimensions from ONNX metadata
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.SimpleAudioSeparationService.LogExecutionProviders(Microsoft.ML.OnnxRuntime.InferenceSession)">
+            <summary>
+            Log the active execution providers for debugging
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.SimpleAudioSeparationService.PreCalculateHanningWindow">
+            <summary>
+            Pre-calculate Hanning window for STFT/ISTFT optimization
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.SimpleAudioSeparationService.ProcessAudioStreaming(System.String)">
+            <summary>
+            Process audio file using streaming approach to minimize memory usage
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.SimpleAudioSeparationService.ProcessSingleChunkOptimized(System.Single[0:,0:],OwnVocalRemover.SimpleAudioSeparationService.ProcessingContext)">
+            <summary>
+            Optimized single chunk processing with buffer reuse
+            </summary>
+        </member>
+        <member name="T:OwnVocalRemover.SimpleAudioSeparationService.ProcessingContext">
+            <summary>
+            Processing context to reuse buffers and reduce GC pressure
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.SimpleAudioSeparationService.ComputeStftOptimized(System.Single[0:,0:,0:],OwnVocalRemover.SimpleAudioSeparationService.ProcessingContext)">
+            <summary>
+            Optimized STFT computation with pre-calculated Hanning window
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.SimpleAudioSeparationService.ComputeIstftOptimized(OwnVocalRemover.OrtTensor,OwnVocalRemover.SimpleAudioSeparationService.ProcessingContext)">
+            <summary>
+            Optimized ISTFT computation with pre-calculated Hanning window and buffer reuse
+            </summary>
+        </member>
+        <member name="T:OwnVocalRemover.SimpleSeparationOptions">
+            <summary>
+            Configuration parameters for audio separation process
+            </summary>
+        </member>
+        <member name="P:OwnVocalRemover.SimpleSeparationOptions.ModelPath">
+            <summary>ONNX model file path</summary>
+        </member>
+        <member name="P:OwnVocalRemover.SimpleSeparationOptions.Model">
+            <summary>Gets or sets the type of separation model used in the operation.</summary>
+        </member>
+        <member name="P:OwnVocalRemover.SimpleSeparationOptions.OutputDirectory">
+            <summary>Output directory path</summary>
+        </member>
+        <member name="P:OwnVocalRemover.SimpleSeparationOptions.EnableGPU">
+            <summary>Enable GPU acceleration (CoreML on macOS, CUDA on other platforms)</summary>
+        </member>
+        <member name="P:OwnVocalRemover.SimpleSeparationOptions.DisableNoiseReduction">
+            <summary>Disable noise reduction (enabled by default)</summary>
+        </member>
+        <member name="P:OwnVocalRemover.SimpleSeparationOptions.Margin">
+            <summary>Margin size for overlapping chunks (in samples)</summary>
+        </member>
+        <member name="P:OwnVocalRemover.SimpleSeparationOptions.ChunkSizeSeconds">
+            <summary>Chunk size in seconds (0 = process entire file at once)</summary>
+        </member>
+        <member name="P:OwnVocalRemover.SimpleSeparationOptions.NFft">
+            <summary>FFT size</summary>
+        </member>
+        <member name="P:OwnVocalRemover.SimpleSeparationOptions.DimT">
+            <summary>Temporal dimension parameter (as power of 2)</summary>
+        </member>
+        <member name="P:OwnVocalRemover.SimpleSeparationOptions.DimF">
+            <summary>Frequency dimension parameter</summary>
+        </member>
+        <member name="T:OwnVocalRemover.SimpleSeparationProgress">
+            <summary>
+            Progress information for separation process
+            </summary>
+        </member>
+        <member name="P:OwnVocalRemover.SimpleSeparationProgress.CurrentFile">
+            <summary>Current file being processed</summary>
+        </member>
+        <member name="P:OwnVocalRemover.SimpleSeparationProgress.OverallProgress">
+            <summary>Overall progress percentage (0-100)</summary>
+        </member>
+        <member name="P:OwnVocalRemover.SimpleSeparationProgress.Status">
+            <summary>Current processing step description</summary>
+        </member>
+        <member name="P:OwnVocalRemover.SimpleSeparationProgress.ProcessedChunks">
+            <summary>Number of chunks processed</summary>
+        </member>
+        <member name="P:OwnVocalRemover.SimpleSeparationProgress.TotalChunks">
+            <summary>Total number of chunks</summary>
+        </member>
+        <member name="T:OwnVocalRemover.SimpleSeparationResult">
+            <summary>
+            Result of audio separation
+            </summary>
+        </member>
+        <member name="P:OwnVocalRemover.SimpleSeparationResult.VocalsPath">
+            <summary>Path to the vocals output file</summary>
+        </member>
+        <member name="P:OwnVocalRemover.SimpleSeparationResult.InstrumentalPath">
+            <summary>Path to the instrumental output file</summary>
+        </member>
+        <member name="P:OwnVocalRemover.SimpleSeparationResult.ProcessingTime">
+            <summary>Processing duration</summary>
+        </member>
+        <member name="T:OwnVocalRemover.InternalModel">
+            <summary>
+            Represents the type of model used in a specific operation or context.
+            </summary>
+        </member>
+        <member name="T:OwnVocalRemover.ModelParameters">
+            <summary>
+            Model parameters for STFT processing (internal use)
+            </summary>
+        </member>
+        <member name="P:OwnVocalRemover.ModelParameters.DimC">
+            <summary>Number of channels (always 4 for complex stereo)</summary>
+        </member>
+        <member name="P:OwnVocalRemover.ModelParameters.DimF">
+            <summary>Frequency dimension size</summary>
+        </member>
+        <member name="P:OwnVocalRemover.ModelParameters.DimT">
+            <summary>Time dimension size (calculated as power of 2)</summary>
+        </member>
+        <member name="P:OwnVocalRemover.ModelParameters.NFft">
+            <summary>FFT size</summary>
+        </member>
+        <member name="P:OwnVocalRemover.ModelParameters.Hop">
+            <summary>Hop size for STFT</summary>
+        </member>
+        <member name="P:OwnVocalRemover.ModelParameters.NBins">
+            <summary>Number of frequency bins (NFft/2 + 1)</summary>
+        </member>
+        <member name="P:OwnVocalRemover.ModelParameters.ChunkSize">
+            <summary>Processing chunk size in samples</summary>
+        </member>
+        <member name="M:OwnVocalRemover.ModelParameters.#ctor(System.Int32,System.Int32,System.Int32,System.Int32)">
+            <summary>
+            Initialize model parameters
+            </summary>
+            <param name="dimF">Frequency dimension</param>
+            <param name="dimT">Time dimension (as power of 2)</param>
+            <param name="nFft">FFT size</param>
+            <param name="hop">Hop size (default 1024)</param>
+        </member>
+        <member name="T:OwnVocalRemover.AudioSeparationService">
+            <summary>
+            Main audio separation service with parallel processing support (legacy)
+            </summary>
+        </member>
+        <member name="E:OwnVocalRemover.AudioSeparationService.ProgressChanged">
+            <summary>Progress update event</summary>
+        </member>
+        <member name="E:OwnVocalRemover.AudioSeparationService.ProcessingStarted">
+            <summary>Processing started event</summary>
+        </member>
+        <member name="E:OwnVocalRemover.AudioSeparationService.ProcessingCompleted">
+            <summary>Processing completed event</summary>
+        </member>
+        <member name="E:OwnVocalRemover.AudioSeparationService.ErrorOccurred">
+            <summary>Error occurred event</summary>
+        </member>
+        <member name="M:OwnVocalRemover.AudioSeparationService.#ctor(OwnVocalRemover.SimpleSeparationOptions)">
+            <summary>
+            Initialize audio separation service
+            </summary>
+            <param name="options">Separation configuration options</param>
+        </member>
+        <member name="M:OwnVocalRemover.AudioSeparationService.Dispose">
+            <summary>Dispose resources</summary>
+        </member>
+        <member name="T:OwnVocalRemover.AudioSeparationExtensions">
+            <summary>
+            Helper extension methods for easier usage
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.AudioSeparationExtensions.LoadModelBytes(OwnVocalRemover.InternalModel)">
+            <summary>
+            Loads the model bytes from the local models directory managed by
+            <see cref="T:OwnVocalRemover.VocalRemoverModelManager"/>. Call
+            <see cref="M:OwnVocalRemover.VocalRemoverModelManager.DownloadModelAsync(OwnVocalRemover.InternalModel,System.IProgress{OwnVocalRemover.ModelDownloadProgress},System.Threading.CancellationToken)"/> first if the file is missing.
+            </summary>
+            <param name="_model">The model whose bytes are to be loaded.</param>
+            <returns>Raw ONNX model bytes.</returns>
+            <exception cref="T:System.InvalidOperationException">
+            Thrown when <paramref name="_model"/> is <see cref="F:OwnVocalRemover.InternalModel.None"/>.
+            </exception>
+        </member>
+        <member name="T:OwnVocalRemover.SimpleSeparator">
+            <summary>
+            Simplified factory with Separator method
+            </summary>
+        </member>
+        <member name="T:OwnVocalRemover.STFTProcessor">
+            <summary>
+            Shared STFT (Short-Time Fourier Transform) processor for audio separation models
+            Provides optimized STFT computation with pre-calculated Hann windows and buffer pooling
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.STFTProcessor.#ctor(System.Int32,System.Int32)">
+            <summary>
+            Initialize STFT processor with specified parameters
+            </summary>
+            <param name="nFft">FFT window size</param>
+            <param name="hopLength">Hop length (stride) between frames</param>
+        </member>
+        <member name="M:OwnVocalRemover.STFTProcessor.GenerateHannWindow(System.Int32)">
+            <summary>
+            Generate Hann window for STFT
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.STFTProcessor.ComputeSpectrogram(System.Single[0:,0:])">
+            <summary>
+            Compute STFT spectrogram for HTDemucs model
+            Uses PyTorch HTDemucs-style padding: hop_length/2 * 3 (NOT n_fft/2)
+            Reference: htdemucs.py _spec() method lines 420-440
+            </summary>
+            <param name="audioChunk">Audio chunk [channels, samples]</param>
+            <returns>Spectrogram tensor [batch, channels, freq_bins, time_frames, complex_components]</returns>
+        </member>
+        <member name="M:OwnVocalRemover.STFTProcessor.ComputeISTFT(System.Single[0:,0:,0:,0:,0:],System.Int32)">
+            <summary>
+            Compute Inverse STFT to reconstruct waveform from spectrogram
+            Uses HTDemucs-style padding and frame handling
+            Reference: htdemucs.py _ispec() method lines 442-450
+            </summary>
+            <param name="spectrogram">Spectrogram [batch, channels, freq_bins, time_frames, complex_components]</param>
+            <param name="targetLength">Target output length in samples</param>
+            <returns>Reconstructed audio [channels, samples]</returns>
+        </member>
+        <member name="M:OwnVocalRemover.STFTProcessor.Flatten5D(System.Single[0:,0:,0:,0:,0:])">
+            <summary>
+            Flatten 5D array to 1D for tensor creation
+            </summary>
+        </member>
+        <member name="P:OwnVocalRemover.STFTProcessor.HannWindow">
+            <summary>
+            Get the Hann window used by this processor
+            </summary>
+        </member>
+        <member name="P:OwnVocalRemover.STFTProcessor.NFft">
+            <summary>
+            Get the FFT size
+            </summary>
+        </member>
+        <member name="P:OwnVocalRemover.STFTProcessor.HopLength">
+            <summary>
+            Get the hop length
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.STFTProcessor.Dispose">
+            <summary>
+            Dispose resources and clear buffer pools
+            </summary>
+        </member>
+        <member name="T:OwnVocalRemover.ModelDownloadProgress">
+            <summary>
+            Progress information for a model download operation.
+            </summary>
+        </member>
+        <member name="P:OwnVocalRemover.ModelDownloadProgress.Model">
+            <summary>
+            The model being downloaded.
+            </summary>
+        </member>
+        <member name="P:OwnVocalRemover.ModelDownloadProgress.FileName">
+            <summary>
+            The file name of the model being downloaded.
+            </summary>
+        </member>
+        <member name="P:OwnVocalRemover.ModelDownloadProgress.BytesDownloaded">
+            <summary>
+            The number of bytes downloaded so far.
+            </summary>
+        </member>
+        <member name="P:OwnVocalRemover.ModelDownloadProgress.TotalBytes">
+            <summary>
+            The total number of bytes to download, or <see langword="null"/> if unknown.
+            </summary>
+        </member>
+        <member name="P:OwnVocalRemover.ModelDownloadProgress.Percentage">
+            <summary>
+            Download progress as a percentage (0–100), or -1 if the total size is unknown.
+            </summary>
+        </member>
+        <member name="T:OwnVocalRemover.VocalRemoverModelManager">
+            <summary>
+            Manages the local storage and on-demand downloading of VocalRemover ONNX model files.
+            Models are stored in a per-user directory and downloaded from HuggingFace when missing.
+            </summary>
+            <remarks>
+            Use <see cref="M:OwnVocalRemover.VocalRemoverModelManager.IsModelAvailable(OwnVocalRemover.InternalModel)"/> to check whether a model is ready before calling
+            <c>Initialize()</c> on any separator, and <see cref="M:OwnVocalRemover.VocalRemoverModelManager.DownloadModelAsync(OwnVocalRemover.InternalModel,System.IProgress{OwnVocalRemover.ModelDownloadProgress},System.Threading.CancellationToken)"/> to fetch
+            missing models. The <see cref="P:OwnVocalRemover.VocalRemoverModelManager.DefaultModelsDirectory"/> property can be overridden at
+            application startup to redirect model storage to a custom path.
+            </remarks>
+        </member>
+        <member name="P:OwnVocalRemover.VocalRemoverModelManager.DefaultModelsDirectory">
+            <summary>
+            Gets or sets the directory where model files are stored.
+            Defaults to <c>OwnAudio/models</c> inside the per-user local application data folder.
+            Override at application startup before any separator is initialized.
+            </summary>
+        </member>
+        <member name="M:OwnVocalRemover.VocalRemoverModelManager.IsModelAvailable(OwnVocalRemover.InternalModel)">
+            <summary>
+            Returns <see langword="true"/> if the model file for <paramref name="model"/> exists
+            in <see cref="P:OwnVocalRemover.VocalRemoverModelManager.DefaultModelsDirectory"/>.
+            </summary>
+            <param name="model">The model to check.</param>
+        </member>
+        <member name="M:OwnVocalRemover.VocalRemoverModelManager.GetModelPath(OwnVocalRemover.InternalModel)">
+            <summary>
+            Returns the full path to the model file for <paramref name="model"/>.
+            </summary>
+            <param name="model">The model whose path is requested.</param>
+            <returns>Absolute path to the model file.</returns>
+            <exception cref="T:System.ArgumentException">
+            Thrown when <paramref name="model"/> is not a downloadable VocalRemover model.
+            </exception>
+            <exception cref="T:System.IO.FileNotFoundException">
+            Thrown when the model file is not present in <see cref="P:OwnVocalRemover.VocalRemoverModelManager.DefaultModelsDirectory"/>.
+            Call <see cref="M:OwnVocalRemover.VocalRemoverModelManager.DownloadModelAsync(OwnVocalRemover.InternalModel,System.IProgress{OwnVocalRemover.ModelDownloadProgress},System.Threading.CancellationToken)"/> to fetch it first.
+            </exception>
+        </member>
+        <member name="M:OwnVocalRemover.VocalRemoverModelManager.DownloadModelAsync(OwnVocalRemover.InternalModel,System.IProgress{OwnVocalRemover.ModelDownloadProgress},System.Threading.CancellationToken)">
+            <summary>
+            Downloads the specified model from HuggingFace to <see cref="P:OwnVocalRemover.VocalRemoverModelManager.DefaultModelsDirectory"/>.
+            If the file already exists it is skipped.
+            </summary>
+            <param name="model">The model to download.</param>
+            <param name="progress">
+            Optional progress sink that receives <see cref="T:OwnVocalRemover.ModelDownloadProgress"/> updates.
+            </param>
+            <param name="cancellationToken">Token to cancel the download.</param>
+            <exception cref="T:System.ArgumentException">
+            Thrown when <paramref name="model"/> is not a downloadable VocalRemover model.
+            </exception>
+        </member>
+        <member name="M:OwnVocalRemover.VocalRemoverModelManager.EnsureModelsAvailableAsync(System.Collections.Generic.IEnumerable{OwnVocalRemover.InternalModel},System.IProgress{OwnVocalRemover.ModelDownloadProgress},System.Threading.CancellationToken)">
+            <summary>
+            Downloads every model in <paramref name="models"/> that is not yet present in
+            <see cref="P:OwnVocalRemover.VocalRemoverModelManager.DefaultModelsDirectory"/>. Models are downloaded sequentially.
+            </summary>
+            <param name="models">Collection of models to ensure are available.</param>
+            <param name="progress">
+            Optional progress sink that receives <see cref="T:OwnVocalRemover.ModelDownloadProgress"/> updates.
+            </param>
+            <param name="cancellationToken">Token to cancel the operation.</param>
+        </member>
+    </members>
+</doc>
