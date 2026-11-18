@@ -67,7 +67,11 @@ namespace MarViKaraoke.Services
         public Version GetCurrentVersion()
         {
             var ver = Assembly.GetExecutingAssembly().GetName().Version;
-            return ver ?? new Version(2, 0, 0);
+            if (ver == null || (ver.Major == 1 && ver.Minor == 0 && ver.Build == 0 && ver.Revision == 0))
+            {
+                return new Version(2, 0, 0);
+            }
+            return new Version(ver.Major, ver.Minor, Math.Max(0, ver.Build));
         }
 
         public async Task<UpdateInfo> CheckForUpdatesAsync(string? repoOverride = null)

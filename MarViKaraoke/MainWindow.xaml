@@ -352,8 +352,10 @@
                                     <DataTemplate DataType="{x:Type models:SongItem}">
                                         <Border Background="#101730" CornerRadius="8" Padding="10,8" BorderBrush="#1a2548" BorderThickness="1">
                                             <DockPanel LastChildFill="True">
-                                                <!-- Tombol Putar & Antre saja di sisi kanan (Lirik & AI sudah otomatis) -->
+                                                <!-- Aksi Lagu: Tombol Minimalis Lirik & AI + Putar & Antre -->
                                                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center" Margin="10,0,0,0">
+                                                    <Button Style="{StaticResource NeonBtn}" Content="🎵" Padding="7,4" FontSize="11" Margin="0,0,4,0" ToolTip="Unduh / Sinkron Lirik LRCLIB" Click="BtnSongFetchLyrics_Click" />
+                                                    <Button Style="{StaticResource NeonBtn}" Content="✨" Padding="7,4" FontSize="11" Margin="0,0,6,0" ToolTip="Pemisahan Vokal AI Manual" Click="BtnSongAiSeparate_Click" />
                                                     <Button Style="{StaticResource PrimaryActionBtn}" Content="▶ Putar" Padding="12,5" FontSize="11" Click="BtnSongPlay_Click" Margin="0,0,6,0" ToolTip="Putar Sekarang" />
                                                     <Button Style="{StaticResource NeonBtn}" Content="+ Antre" Padding="12,5" FontSize="11" Click="BtnSongQueue_Click" ToolTip="Masukkan ke Antrean" />
                                                 </StackPanel>

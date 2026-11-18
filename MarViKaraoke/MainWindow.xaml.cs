@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -154,7 +155,7 @@ namespace MarViKaraoke
             MessageBox.Show($"Memindai ulang folder songs. Ditemukan {_vm.Catalog.Count} file musik.", "MarVi Karaoke");
         }
 
-        private void BtnAddFiles_Click(object sender, RoutedEventArgs e)
+        private async void BtnAddFiles_Click(object sender, RoutedEventArgs e)
         {
             var dialog = new OpenFileDialog
             {
@@ -168,13 +169,37 @@ namespace MarViKaraoke
                 if (!System.IO.Directory.Exists(songsDir))
                     System.IO.Directory.CreateDirectory(songsDir);
 
+                var importedPaths = new List<string>();
                 foreach (var file in dialog.FileNames)
                 {
                     string dest = System.IO.Path.Combine(songsDir, System.IO.Path.GetFileName(file));
                     if (!System.IO.File.Exists(dest))
                         System.IO.File.Copy(file, dest, true);
+                    importedPaths.Add(dest);
                 }
+
                 _vm.ScanDefaultSongsDirectory();
+
+                // Otomatisasi Lirik & Pemisahan Vokal AI untuk lagu yang baru diimpor
+                int successCount = 0;
+                foreach (var path in importedPaths)
+                {
+                    var song = _vm.Catalog.FirstOrDefault(s => string.Equals(s.FilePath, path, StringComparison.OrdinalIgnoreCase));
+                    if (song != null)
+                    {
+                        // 1. Ambil lirik sinkron otomatis
+                        await _vm.AutoFetchLyricsForSongAsync(song);
+
+                        // 2. Pemisahan vokal AI jika belum ada file instrumental
+                        if (!song.HasAiInstrumental)
+                        {
+                            await RunAiSeparationWithProgressAsync(song, false);
+                        }
+                        successCount++;
+                    }
+                }
+
+                ShowToastNotification("✅ Import Selesai", $"{successCount} lagu berhasil diimpor & diproses otomatis!", "🎵");
             }
         }
 
@@ -204,23 +229,23 @@ namespace MarViKaraoke
             if (sender is Button btn && btn.DataContext is SongItem song)
             {
                 btn.IsEnabled = false;
-                btn.Content = "⏳...";
+                btn.Content = "⏳";
                 try
                 {
                     bool ok = await _vm.AutoFetchLyricsForSongAsync(song);
                     if (ok)
                     {
-                        MessageBox.Show($"Lirik sinkron untuk '{song.Title}' berhasil didapatkan dan disinkronkan!", "Auto Lirik Sinkron", MessageBoxButton.OK, MessageBoxImage.Information);
+                        ShowToastNotification("🎵 Lirik Sinkron", $"Lirik untuk '{song.Title}' berhasil didapatkan!", "🎵");
                     }
                     else
                     {
-                        MessageBox.Show($"Lirik sinkron untuk '{song.Title}' belum ditemukan di database.", "Auto Lirik Sinkron", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        ShowToastNotification("ℹ️ Lirik Belum Tersedia", $"Lirik untuk '{song.Title}' belum ditemukan di LRCLIB.", "ℹ️");
                     }
                 }
                 finally
                 {
                     btn.IsEnabled = true;
-                    btn.Content = "🎵 Lirik";
+                    btn.Content = "🎵";
                 }
             }
         }
@@ -229,11 +254,11 @@ namespace MarViKaraoke
         {
             if (sender is Button btn && btn.DataContext is SongItem song)
             {
-                await RunAiSeparationWithProgressAsync(song);
+                await RunAiSeparationWithProgressAsync(song, true);
             }
         }
 
-        private async Task RunAiSeparationWithProgressAsync(SongItem song)
+        private async Task RunAiSeparationWithProgressAsync(SongItem song, bool showSuccessDialog = true)
         {
             if (song == null) return;
 
@@ -270,12 +295,26 @@ namespace MarViKaraoke
 
                 if (ok)
                 {
-                    MessageBox.Show($"Pemisahan vokal AI untuk '{song.Title}' selesai!\nFile instrumental bersih siap diputar.", "MarVi Karaoke AI", MessageBoxButton.OK, MessageBoxImage.Information);
+                    if (showSuccessDialog)
+                    {
+                        MessageBox.Show($"Pemisahan vokal AI untuk '{song.Title}' selesai!\nFile instrumental bersih siap diputar.", "MarVi Karaoke AI", MessageBoxButton.OK, MessageBoxImage.Information);
+                    }
+                    else
+                    {
+                        ShowToastNotification("✨ AI Vokal Selesai", $"Instrumental bersih untuk '{song.Title}' siap diputar.", "✨");
+                    }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Gagal memisahkan vokal: {ex.Message}", "Error AI Separator", MessageBoxButton.OK, MessageBoxImage.Error);
+                if (showSuccessDialog)
+                {
+                    MessageBox.Show($"Gagal memisahkan vokal: {ex.Message}", "Error AI Separator", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                else
+                {
+                    ShowToastNotification("❌ AI Gagal", $"Gagal memisahkan vokal '{song.Title}': {ex.Message}", "❌");
+                }
             }
             finally
             {
