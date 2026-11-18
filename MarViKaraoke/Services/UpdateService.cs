@@ -36,7 +36,7 @@ namespace MarViKaraoke.Services
                     if (doc.RootElement.TryGetProperty("GitHubRepo", out var repoProp))
                     {
                         string? repo = repoProp.GetString();
-                        if (!string.IsNullOrWhiteSpace(repo))
+                        if (!string.IsNullOrWhiteSpace(repo) && !repo.Equals("Ammar-Official/MarViKaraoke", StringComparison.OrdinalIgnoreCase))
                         {
                             GitHubRepo = repo.Trim();
                         }
