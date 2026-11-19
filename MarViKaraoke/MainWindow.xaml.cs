@@ -223,6 +223,81 @@ namespace MarViKaraoke
             }
         }
 
+        private void BtnSongMoreActions_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button btn && btn.ContextMenu != null)
+            {
+                btn.ContextMenu.PlacementTarget = btn;
+                btn.ContextMenu.Placement = System.Windows.Controls.Primitives.PlacementMode.Bottom;
+                btn.ContextMenu.IsOpen = true;
+            }
+        }
+
+        private static SongItem? GetSongFromMenu(object sender)
+        {
+            if (sender is MenuItem menuItem)
+            {
+                if (menuItem.DataContext is SongItem song)
+                    return song;
+
+                if (menuItem.Parent is ContextMenu cm && cm.PlacementTarget is FrameworkElement target && target.DataContext is SongItem targetSong)
+                    return targetSong;
+            }
+            return null;
+        }
+
+        private async void MenuSongFetchLyrics_Click(object sender, RoutedEventArgs e)
+        {
+            var song = GetSongFromMenu(sender);
+            if (song == null || _vm == null) return;
+
+            ShowToastNotification("⏳ Mengunduh Lirik", $"Mencari lirik untuk '{song.Title}'...", "🎵");
+            bool ok = await _vm.AutoFetchLyricsForSongAsync(song);
+            if (ok)
+            {
+                ShowToastNotification("🎵 Lirik Sinkron", $"Lirik untuk '{song.Title}' berhasil didapatkan!", "🎵");
+            }
+            else
+            {
+                ShowToastNotification("ℹ️ Lirik Belum Tersedia", $"Lirik untuk '{song.Title}' belum ditemukan di LRCLIB.", "ℹ️");
+            }
+        }
+
+        private async void MenuSongAiSeparate_Click(object sender, RoutedEventArgs e)
+        {
+            var song = GetSongFromMenu(sender);
+            if (song != null)
+            {
+                await RunAiSeparationWithProgressAsync(song, true);
+            }
+        }
+
+        private void MenuSongDelete_Click(object sender, RoutedEventArgs e)
+        {
+            var song = GetSongFromMenu(sender);
+            if (song == null || _vm == null) return;
+
+            var result = MessageBox.Show(
+                $"Apakah Anda yakin ingin menghapus lagu ini dari koleksi?\n\nJudul: {song.Title}\nArtis: {song.Artist}\n\nFile audio dan lirik akan dihapus dari penyimpanan.",
+                "Konfirmasi Hapus Lagu",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Warning);
+
+            if (result == MessageBoxResult.Yes)
+            {
+                string title = song.Title;
+                bool ok = _vm.DeleteSong(song);
+                if (ok)
+                {
+                    ShowToastNotification("🗑️ Lagu Dihapus", $"\"{title}\" berhasil dihapus dari koleksi.", "🗑️");
+                }
+                else
+                {
+                    MessageBox.Show("Gagal menghapus file lagu dari penyimpanan.", "Error Hapus Lagu", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+
         private async void BtnSongFetchLyrics_Click(object sender, RoutedEventArgs e)
         {
             if (_vm == null) return;

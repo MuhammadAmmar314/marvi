@@ -6,9 +6,16 @@ using System.Windows.Media.Animation;
 
 namespace MarViKaraoke.Controls
 {
+    public enum MarqueeDirection
+    {
+        Left,
+        Right
+    }
+
     public class MarqueeTextBlock : Canvas
     {
-        private readonly TextBlock _textBlock;
+        private readonly TextBlock _textBlock1;
+        private readonly TextBlock _textBlock2;
         private readonly TranslateTransform _transform;
 
         public static readonly DependencyProperty TextProperty =
@@ -26,6 +33,10 @@ namespace MarViKaraoke.Controls
         public static readonly DependencyProperty ForegroundProperty =
             DependencyProperty.Register(nameof(Foreground), typeof(Brush), typeof(MarqueeTextBlock),
                 new PropertyMetadata(Brushes.White, OnForegroundChanged));
+
+        public static readonly DependencyProperty DirectionProperty =
+            DependencyProperty.Register(nameof(Direction), typeof(MarqueeDirection), typeof(MarqueeTextBlock),
+                new PropertyMetadata(MarqueeDirection.Right, OnTextOrVisualChanged));
 
         public string Text
         {
@@ -51,13 +62,20 @@ namespace MarViKaraoke.Controls
             set => SetValue(ForegroundProperty, value);
         }
 
+        public MarqueeDirection Direction
+        {
+            get => (MarqueeDirection)GetValue(DirectionProperty);
+            set => SetValue(DirectionProperty, value);
+        }
+
         public MarqueeTextBlock()
         {
             ClipToBounds = true;
             Height = 22;
 
             _transform = new TranslateTransform();
-            _textBlock = new TextBlock
+
+            _textBlock1 = new TextBlock
             {
                 RenderTransform = _transform,
                 VerticalAlignment = VerticalAlignment.Center,
@@ -65,7 +83,17 @@ namespace MarViKaraoke.Controls
                 Foreground = Brushes.White
             };
 
-            Children.Add(_textBlock);
+            _textBlock2 = new TextBlock
+            {
+                RenderTransform = _transform,
+                VerticalAlignment = VerticalAlignment.Center,
+                TextWrapping = TextWrapping.NoWrap,
+                Foreground = Brushes.White,
+                Visibility = Visibility.Collapsed
+            };
+
+            Children.Add(_textBlock1);
+            Children.Add(_textBlock2);
 
             Loaded += (s, e) => UpdateAnimation();
             SizeChanged += (s, e) => UpdateAnimation();
@@ -73,22 +101,34 @@ namespace MarViKaraoke.Controls
 
         private static void OnForegroundChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (d is MarqueeTextBlock m && m._textBlock != null)
+            if (d is MarqueeTextBlock m)
             {
-                m._textBlock.Foreground = (e.NewValue as Brush) ?? Brushes.White;
+                var brush = (e.NewValue as Brush) ?? Brushes.White;
+                if (m._textBlock1 != null) m._textBlock1.Foreground = brush;
+                if (m._textBlock2 != null) m._textBlock2.Foreground = brush;
             }
         }
 
         private static void OnTextOrVisualChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (d is MarqueeTextBlock m && m._textBlock != null)
+            if (d is MarqueeTextBlock m && m._textBlock1 != null && m._textBlock2 != null)
             {
-                m._textBlock.Text = m.Text ?? string.Empty;
-                m._textBlock.FontSize = m.FontSize;
-                m._textBlock.FontWeight = m.FontWeight;
-                m._textBlock.Foreground = m.Foreground ?? Brushes.White;
-                m.ToolTip = m.Text;
-                
+                string text = m.Text ?? string.Empty;
+                m._textBlock1.Text = text;
+                m._textBlock2.Text = text;
+
+                m._textBlock1.FontSize = m.FontSize;
+                m._textBlock2.FontSize = m.FontSize;
+
+                m._textBlock1.FontWeight = m.FontWeight;
+                m._textBlock2.FontWeight = m.FontWeight;
+
+                var brush = m.Foreground ?? Brushes.White;
+                m._textBlock1.Foreground = brush;
+                m._textBlock2.Foreground = brush;
+
+                m.ToolTip = text;
+
                 if (m.IsLoaded)
                 {
                     m.UpdateAnimation();
@@ -98,30 +138,58 @@ namespace MarViKaraoke.Controls
 
         public void UpdateAnimation()
         {
-            if (!IsLoaded || ActualWidth <= 0 || _textBlock == null) return;
+            if (!IsLoaded || ActualWidth <= 0 || _textBlock1 == null || _textBlock2 == null) return;
 
             try
             {
-                _textBlock.Measure(new Size(double.PositiveInfinity, ActualHeight > 0 ? ActualHeight : 30));
-                double textWidth = _textBlock.DesiredSize.Width;
-                double containerWidth = ActualWidth;
-
                 _transform.BeginAnimation(TranslateTransform.XProperty, null);
                 _transform.X = 0;
 
-                // Jika teks lebih panjang dari lebar tampilan, jalankan animasi marquee bolak-balik
-                if (textWidth > containerWidth + 6)
+                _textBlock1.Measure(new Size(double.PositiveInfinity, ActualHeight > 0 ? ActualHeight : 30));
+                double textWidth = _textBlock1.DesiredSize.Width;
+                double containerWidth = ActualWidth;
+
+                const double gap = 48.0;
+
+                // Jika teks muat di dalam container, posisikan normal tanpa animasi
+                if (textWidth <= containerWidth + 4)
                 {
-                    double distance = textWidth - containerWidth + 24;
-                    double seconds = Math.Max(3.0, distance / 35.0); // Kecepatan baca wajar (~35 px/detik)
+                    _textBlock2.Visibility = Visibility.Collapsed;
+                    Canvas.SetLeft(_textBlock1, 0);
+                    return;
+                }
+
+                _textBlock2.Visibility = Visibility.Visible;
+                double totalCycleDistance = textWidth + gap;
+                double seconds = Math.Max(3.5, totalCycleDistance / 35.0); // Kecepatan baca wajar (~35 px/detik)
+
+                if (Direction == MarqueeDirection.Right)
+                {
+                    // Bergerak ke kanan terus: TextBlock 1 mulai di 0, TextBlock 2 berada di sebelah kirinya (-totalCycleDistance)
+                    Canvas.SetLeft(_textBlock1, 0);
+                    Canvas.SetLeft(_textBlock2, -totalCycleDistance);
 
                     var anim = new DoubleAnimation
                     {
                         From = 0,
-                        To = -distance,
+                        To = totalCycleDistance,
                         Duration = TimeSpan.FromSeconds(seconds),
-                        BeginTime = TimeSpan.FromSeconds(1.2), // Jeda awal agar pembaca bisa melihat kata pertama
-                        AutoReverse = true,
+                        RepeatBehavior = RepeatBehavior.Forever
+                    };
+
+                    _transform.BeginAnimation(TranslateTransform.XProperty, anim);
+                }
+                else
+                {
+                    // Bergerak ke kiri terus: TextBlock 1 mulai di 0, TextBlock 2 berada di sebelah kanannya (+totalCycleDistance)
+                    Canvas.SetLeft(_textBlock1, 0);
+                    Canvas.SetLeft(_textBlock2, totalCycleDistance);
+
+                    var anim = new DoubleAnimation
+                    {
+                        From = 0,
+                        To = -totalCycleDistance,
+                        Duration = TimeSpan.FromSeconds(seconds),
                         RepeatBehavior = RepeatBehavior.Forever
                     };
 

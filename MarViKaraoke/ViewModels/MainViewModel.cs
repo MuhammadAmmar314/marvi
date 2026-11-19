@@ -358,6 +358,86 @@ namespace MarViKaraoke.ViewModels
             }
         }
 
+        public bool DeleteSong(SongItem song)
+        {
+            if (song == null) return false;
+
+            try
+            {
+                // 1. Jika lagu ini sedang aktif diputar, hentikan pemutaran
+                if (CurrentSong == song || (CurrentSong != null && string.Equals(CurrentSong.FilePath, song.FilePath, StringComparison.OrdinalIgnoreCase)))
+                {
+                    Stop();
+                    CurrentSong = null;
+                    ActiveLineText = "Pilih lagu untuk memulai bernyanyi";
+                    NextLineText = "";
+                    CurrentWords.Clear();
+                }
+
+                // 2. Bersihkan lagu dari antrean bila ada
+                var queuedItems = Queue.Where(q => q.Song == song || string.Equals(q.Song.FilePath, song.FilePath, StringComparison.OrdinalIgnoreCase)).ToList();
+                foreach (var q in queuedItems)
+                {
+                    Queue.Remove(q);
+                }
+
+                // 3. Hapus berkas audio dan aset lirik/stem dari disk penyimpanan
+                string? mainFile = song.FilePath;
+                string? dir = !string.IsNullOrEmpty(mainFile) ? Path.GetDirectoryName(mainFile) : null;
+                string? baseName = !string.IsNullOrEmpty(mainFile) ? Path.GetFileNameWithoutExtension(mainFile) : null;
+
+                if (!string.IsNullOrEmpty(mainFile) && File.Exists(mainFile))
+                {
+                    try { File.Delete(mainFile); } catch { }
+                }
+
+                if (!string.IsNullOrEmpty(song.LyricsPath) && File.Exists(song.LyricsPath))
+                {
+                    try { File.Delete(song.LyricsPath); } catch { }
+                }
+                else if (dir != null && baseName != null)
+                {
+                    string lrcCandidate = Path.Combine(dir, $"{baseName}.lrc");
+                    if (File.Exists(lrcCandidate)) try { File.Delete(lrcCandidate); } catch { }
+                }
+
+                if (!string.IsNullOrEmpty(song.InstrumentalFilePath) && File.Exists(song.InstrumentalFilePath))
+                {
+                    try { File.Delete(song.InstrumentalFilePath); } catch { }
+                }
+
+                if (dir != null && baseName != null)
+                {
+                    string[] extraCandidates = new[]
+                    {
+                        Path.Combine(dir, $"{baseName}_music.wav"),
+                        Path.Combine(dir, $"{baseName}_vocals.wav"),
+                        Path.Combine(dir, $"{baseName}_instrumental.wav"),
+                        Path.Combine(dir, "output", $"{baseName}_music.wav"),
+                        Path.Combine(dir, "output", $"{baseName}_vocals.wav")
+                    };
+
+                    foreach (var cand in extraCandidates)
+                    {
+                        if (File.Exists(cand))
+                        {
+                            try { File.Delete(cand); } catch { }
+                        }
+                    }
+                }
+
+                // 4. Hapus dari katalog UI
+                Catalog.Remove(song);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Gagal menghapus lagu: {ex.Message}");
+                return false;
+            }
+        }
+
         public async Task<bool> SeparateAudioFileWithAiAsync(string audioFilePath, Action<double, string>? progressCallback = null)
         {
             if (string.IsNullOrEmpty(audioFilePath) || !File.Exists(audioFilePath))
