@@ -389,6 +389,7 @@ namespace MarViKaraoke.ViewModels
                 CreateNoWindow = true
             };
 
+            var lastError = string.Empty;
             using var process = new System.Diagnostics.Process { StartInfo = psi };
             process.OutputDataReceived += (s, e) =>
             {
@@ -410,13 +411,34 @@ namespace MarViKaraoke.ViewModels
                     progressCallback?.Invoke(pct, e.Data);
                 }
             };
+            process.ErrorDataReceived += (s, e) =>
+            {
+                if (!string.IsNullOrWhiteSpace(e.Data))
+                {
+                    lastError = e.Data;
+                }
+            };
 
             process.Start();
             try { process.PriorityClass = System.Diagnostics.ProcessPriorityClass.BelowNormal; } catch { }
             process.BeginOutputReadLine();
+            process.BeginErrorReadLine();
             await process.WaitForExitAsync();
 
             ScanDefaultSongsDirectory();
+
+            string baseName = Path.GetFileNameWithoutExtension(audioFilePath);
+            bool hasOutput = File.Exists(Path.Combine(outDir, $"{baseName}_music.wav")) ||
+                             File.Exists(Path.Combine(outDir, $"{baseName}_instrumental.wav")) ||
+                             File.Exists(Path.Combine(outDir, "output", $"{baseName}_music.wav"));
+
+            if (process.ExitCode != 0 || !hasOutput)
+            {
+                string errMsg = string.IsNullOrWhiteSpace(lastError) ? "Pemisahan vokal tidak menghasilkan file instrumen." : lastError;
+                progressCallback?.Invoke(0, $"Error AI Separator: {errMsg}");
+                return false;
+            }
+
             return true;
         }
 
